@@ -44,7 +44,7 @@ claude plugin install thinking-translate --marketplace zhangyu-ch/claude-thinkin
 | 选项 | 说明 | 默认 |
 | --- | --- | --- |
 | `translateTo` | 目标语言：off、Chinese、English、Japanese 等；off 关闭翻译 | Chinese |
-| `translator` | `haiku`：通过你自己的 Claude 会话调用 Haiku（低 effort），会用掉少量订阅额度。`api`：调用任意支持 Anthropic Messages 协议的接口 | haiku |
+| `translator` | `api`：调用任意支持 Anthropic Messages 协议的接口（低 effort），失败或无结果时回退 Haiku。`haiku`：只通过你自己的 Claude 会话调用 Haiku（低 effort），会用掉少量订阅额度 | api |
 | `apiBaseUrl` | `api` 方式的接口地址，会自动拼上 `/v1/messages`。Anthropic 或兼容 Messages 协议的服务商都可以 | https://api.anthropic.com |
 | `apiKey` | `api` 方式的密钥，以 `x-api-key` 发送；属于敏感字段，存在系统安全存储里，请在 `/config` 里填写，不要写进 settings.json | 空 |
 | `apiModel` | `api` 方式使用的模型名 | claude-haiku-5-5 |

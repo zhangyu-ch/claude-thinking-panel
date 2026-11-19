@@ -1,6 +1,6 @@
 {
   "name": "thinking-translate",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Translates Claude's thinking and shows the translation right under each thinking block in the chat, with Claude Haiku or any Anthropic Messages API endpoint",
   "author": {
     "name": "zhangyu-ch"
@@ -27,8 +27,8 @@
     "translator": {
       "type": "string",
       "title": "Translator",
-      "description": "haiku: Claude Haiku at low effort through your own Claude session. api: any endpoint speaking the Anthropic Messages protocol (Anthropic or a compatible provider), set below.",
-      "default": "haiku",
+      "description": "api: any endpoint speaking the Anthropic Messages protocol (Anthropic or a compatible provider), set below, falling back to Haiku when it fails. haiku: Claude Haiku at low effort through your own Claude session only.",
+      "default": "api",
       "options": [
         "haiku",
         "api"

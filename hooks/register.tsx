@@ -23,6 +23,7 @@ async function viaApi($: EngineInterface, options: Record<string, unknown>, lang
     body: JSON.stringify({
       model: String(options.apiModel || 'claude-haiku-5-5'),
       max_tokens: 8192,
+      output_config: { effort: 'low' },
       system: system(lang),
       messages: [{ role: 'user', content: wrap(text) }],
     }),
@@ -39,9 +40,11 @@ async function viaHaiku($: EngineInterface, lang: string, text: string) {
 
 // shortcut: the api path waits as long as the host's fetch does (a $.clock.sleep race would eat the hook's budget),
 // add a timeout if an endpoint is seen to hang.
+// api first; a failed or empty api answer falls back to Haiku.
 function translate($: EngineInterface, options: Record<string, unknown>, lang: string, text: string) {
-  const work = options.translator === 'api' ? viaApi($, options, lang, text) : viaHaiku($, lang, text)
-  return work.catch(() => undefined)
+  const haiku = () => viaHaiku($, lang, text).catch(() => undefined)
+  if (options.translator !== 'api') return haiku()
+  return viaApi($, options, lang, text).catch(() => undefined).then(zh => zh ?? haiku())
 }
 
 // Each translation belongs to the row right after its thinking: a tool call by its id, a reply by its opening words.

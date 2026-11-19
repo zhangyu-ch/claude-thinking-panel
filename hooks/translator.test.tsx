@@ -52,9 +52,19 @@ test('api: posts to the Messages endpoint with the key and model', { options: { 
   await step($)
   expect(sent[0].url).toBe('https://example.com/anthropic/v1/messages')
   expect(sent[0].init.headers['x-api-key']).toBe('k1')
-  expect(JSON.parse(sent[0].init.body)).toMatchObject({ model: 'm1', messages: [{ role: 'user', content: '<text>\nHello world\n</text>' }] })
+  expect(JSON.parse(sent[0].init.body)).toMatchObject({ model: 'm1', output_config: { effort: 'low' }, messages: [{ role: 'user', content: '<text>\nHello world\n</text>' }] })
   const tool = await toolRow($)
   expect((await tool.find({ type: 'Markdown' }))?.text).toBe('> 你好世界')
+  await tool.unmount()
+})
+
+test('a failed api falls back to haiku', { options: { translateTo: 'Chinese', translator: 'api' } }, async ($, on) => {
+  engine(on)
+  on('http.fetch', () => ({ value: { status: 500, ok: false, headers: {}, text: '' } }) as any)
+  on('model.complete', () => ({ value: { isAnswered: true, text: '回退译文', usage: { input_tokens: 1, output_tokens: 1 } } }) as any)
+  await step($)
+  const tool = await toolRow($)
+  expect((await tool.find({ type: 'Markdown' }))?.text).toBe('> 回退译文')
   await tool.unmount()
 })
 
@@ -62,6 +72,7 @@ test('a failed translation draws nothing, and subagents are not translated', { o
   engine(on)
   let calls = 0
   on('http.fetch', () => (calls++, { value: { status: 500, ok: false, headers: {}, text: '' } }) as any)
+  on('model.complete', () => ({ value: { isAnswered: false, reason: 'empty' } }) as any)
   await step($, 'a1')
   expect(calls).toBe(0)
   await step($)
