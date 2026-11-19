@@ -1,8 +1,8 @@
-"""Usage web page for the Razonamiento plugin.
+"""Usage web page for the thinking-translate plugin.
 
 Indexes the transcripts with uso.py, fills uso_web.html with the data, writes ~/.claude/uso/uso.html
 and opens it in the browser. The page filters by period and project by itself, with no server.
-The /uso command passes the rate limits, which only the engine knows, as --limits JSON.
+The /usage command passes the rate limits, which only the engine knows, as --limits JSON.
 
   python uso_web.py [--limits JSON] [--no-open]
 """
@@ -145,9 +145,9 @@ def data(db, limits, now, log_path=LOG):
 
     def sess(s):
         if s not in s_index:
-            project, title = titles.get(s, ('Sin carpeta', None))
+            project, title = titles.get(s, ('无目录', None))
             s_index[s] = len(sessions)
-            sessions.append([(title or 'Sin titulo').replace('\n', ' ')[:140], project])
+            sessions.append([(title or '无标题').replace('\n', ' ')[:140], project])
         return s_index[s]
 
     local = "date(ts/1000,'unixepoch','localtime')"

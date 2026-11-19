@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="es">
+<html lang="zh-CN">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Uso de Claude</title>
+<title>Claude 用量</title>
 <style>
 :root {
   color-scheme: light;
@@ -109,7 +109,7 @@ th .arrow { opacity: .7 }
 <main>
   <header>
     <div>
-      <h1>Uso de Claude</h1>
+      <h1>Claude 用量</h1>
       <p class="sub" id="stamp"></p>
     </div>
   </header>
@@ -117,83 +117,83 @@ th .arrow { opacity: .7 }
   <div class="hero" id="hero" style="display:none"></div>
 
   <div class="filters">
-    <div class="seg" id="range" role="group" aria-label="Periodo">
-      <button data-r="7">7 dias</button><button data-r="30">30 dias</button><button data-r="90">90 dias</button>
-      <button data-r="mes">Este mes</button><button data-r="todo">Todo</button>
+    <div class="seg" id="range" role="group" aria-label="时间段">
+      <button data-r="7">7 天</button><button data-r="30">30 天</button><button data-r="90">90 天</button>
+      <button data-r="mes">本月</button><button data-r="todo">全部</button>
     </div>
-    <select id="project" aria-label="Proyecto"></select>
-    <span class="chip" id="chip"><span id="chipText"></span><button title="Quitar filtro" id="chipX">×</button></span>
-    <span class="chip" id="dayChip"><span id="dayText"></span><button title="Quitar el dia" id="dayX">×</button></span>
+    <select id="project" aria-label="项目"></select>
+    <span class="chip" id="chip"><span id="chipText"></span><button title="清除筛选" id="chipX">×</button></span>
+    <span class="chip" id="dayChip"><span id="dayText"></span><button title="清除日期" id="dayX">×</button></span>
   </div>
 
   <section class="grid g4" id="tiles"></section>
 
   <section class="grid g2">
     <div class="card">
-      <div class="head"><h2>Limites de tu plan</h2><span class="small">en este momento</span></div>
+      <div class="head"><h2>套餐限额</h2><span class="small">当前</span></div>
       <div id="limits"></div>
       <div id="history"></div>
     </div>
     <div class="card">
-      <div class="head"><h2>Ultimas 24 horas</h2><span class="small">la zona sombreada es tu ventana de 5 horas</span></div>
+      <div class="head"><h2>最近 24 小时</h2><span class="small">阴影部分是当前的 5 小时窗口</span></div>
       <div id="last24"></div>
     </div>
   </section>
 
   <section class="grid">
     <div class="card">
-      <div class="head"><h2>Lo que te da tu plan</h2>
-        <div class="seg plans" id="plans" role="group" aria-label="Tu plan"><button data-p="pro">Pro</button><button data-p="max">Max</button><button data-p="ultra">Ultra</button></div></div>
+      <div class="head"><h2>套餐价值</h2>
+        <div class="seg plans" id="plans" role="group" aria-label="你的套餐"><button data-p="pro">Pro</button><button data-p="max">Max</button><button data-p="ultra">Ultra</button></div></div>
       <div id="plan" class="split"></div>
     </div>
   </section>
 
   <section class="grid g2">
     <div class="card">
-      <div class="head"><h2>Este mes frente al anterior</h2><span class="small">gasto acumulado</span></div>
+      <div class="head"><h2>本月与上月</h2><span class="small">累计花费</span></div>
       <div id="cum"></div>
       <div class="legend" id="cumLegend"></div>
     </div>
     <div class="card">
-      <div class="head"><h2>Por meses</h2></div>
+      <div class="head"><h2>按月</h2></div>
       <div id="months"></div>
     </div>
   </section>
 
   <section class="grid">
     <div class="card">
-      <div class="head"><h2>Gasto por dia</h2><div class="legend" id="dayLegend"></div></div>
-      <p class="small muted" style="margin:-6px 0 6px">Pulsa un dia para ver sus conversaciones y peticiones.</p>
+      <div class="head"><h2>每日花费</h2><div class="legend" id="dayLegend"></div></div>
+      <p class="small muted" style="margin:-6px 0 6px">点击某一天查看当天的对话和提问。</p>
       <div id="days"></div>
-      <details><summary>Ver como tabla</summary><div id="daysTable"></div></details>
+      <details><summary>以表格查看</summary><div id="daysTable"></div></details>
     </div>
   </section>
 
   <section class="grid g2">
     <div class="card">
-      <div class="head"><h2>Proyectos</h2><span class="small">pulsa uno para filtrar</span></div>
+      <div class="head"><h2>项目</h2><span class="small">点击可筛选</span></div>
       <div id="projects"></div>
     </div>
     <div class="card">
-      <div class="head"><h2>Modelos</h2></div>
+      <div class="head"><h2>模型</h2></div>
       <div id="models"></div>
     </div>
   </section>
 
   <section class="grid g2">
     <div class="card">
-      <div class="head"><h2>Cuando gastas</h2><span class="small">por dia de la semana y hora</span></div>
+      <div class="head"><h2>花费时段</h2><span class="small">按星期和小时</span></div>
       <div id="heat"></div>
     </div>
     <div class="card">
-      <div class="head"><h2>Consejos para gastar menos</h2><span class="small">ultimos 7 dias</span></div>
+      <div class="head"><h2>省钱建议</h2><span class="small">最近 7 天</span></div>
       <ul class="tips" id="tips"></ul>
     </div>
   </section>
 
   <section class="grid">
     <div class="card">
-      <div class="head"><h2>Conversaciones mas caras</h2><input type="search" id="q" placeholder="Buscar en conversaciones y peticiones"></div>
+      <div class="head"><h2>最贵的对话</h2><input type="search" id="q" placeholder="搜索对话和提问"></div>
       <p class="small muted" id="convNote" style="margin:-6px 0 6px"></p>
       <div id="convs"></div>
     </div>
@@ -201,7 +201,7 @@ th .arrow { opacity: .7 }
 
   <section class="grid">
     <div class="card">
-      <div class="head"><h2>Peticiones mas caras</h2><span class="small">lo que costo cada mensaje tuyo</span></div>
+      <div class="head"><h2>最贵的提问</h2><span class="small">你每条消息的花费</span></div>
       <div id="prompts"></div>
     </div>
   </section>
@@ -217,17 +217,17 @@ const FAM = [
   { key: 'haiku', name: 'Haiku', color: 'var(--s4)' },
 ]
 const famOf = m => Math.max(0, FAM.findIndex(f => m.includes(f.key)))
-const MES = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic']
-const MESL = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre']
-const DIAS = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado', 'domingo']
+const MES = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月']
+const MESL = MES
+const DIAS = ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
 const DAY = 86400000
 
 const money = n => {
   n = n || 0
-  if (Math.abs(n) >= 100) return Math.round(n).toLocaleString('es-ES', { useGrouping: 'always' }) + ' $'
-  return n.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' $'
+  if (Math.abs(n) >= 100) return '$' + Math.round(n).toLocaleString('zh-CN')
+  return '$' + n.toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 }
-const short = n => (n >= 1000 ? (n / 1000).toLocaleString('es-ES', { maximumFractionDigits: 1 }) + 'k $' : n.toLocaleString('es-ES', { maximumFractionDigits: n < 10 ? 1 : 0 }) + ' $')
+const short = n => '$' + (n >= 1000 ? (n / 1000).toLocaleString('zh-CN', { maximumFractionDigits: 1 }) + 'k' : n.toLocaleString('zh-CN', { maximumFractionDigits: n < 10 ? 1 : 0 }))
 const pct = n => Math.round(n) + '%'
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c])
 const $ = id => document.getElementById(id)
@@ -236,7 +236,7 @@ const parse = s => { const [y, m, d] = s.split('-').map(Number); return new Date
 // Calendar arithmetic by date, not by 24 h steps, so the October and March clock changes lose no day.
 const addDays = (k, n) => { const d = parse(k); return key(new Date(d.getFullYear(), d.getMonth(), d.getDate() + n)) }
 const span = (a, b) => Math.round((parse(b) - parse(a)) / DAY) + 1
-const nice = d => `${d.getDate()} ${MES[d.getMonth()]}`
+const nice = d => `${MES[d.getMonth()]}${d.getDate()}日`
 
 const now = new Date(D.generated)
 const today = key(now)
@@ -348,34 +348,34 @@ function tiles(rows, prev, w, prevFrom) {
   const forecast = elapsed > 0.5 ? (month / elapsed) * dim : null
   const inTot = sum(rows, 6), cache = inTot ? (sum(rows, 5) / inTot) * 100 : 0
   const sub = cost ? (sum(rows, 4) / cost) * 100 : 0
-  const deltaTxt = delta === null ? 'sin datos completos del periodo anterior para comparar'
-    : `<span class="${delta > 0 ? 'upbad' : 'upgood'}">${delta > 0 ? '▲' : '▼'} ${pct(Math.abs(delta))}</span> frente a los ${w.days} dias anteriores`
+  const deltaTxt = delta === null ? '上一周期数据不完整，无法对比'
+    : `<span class="${delta > 0 ? 'upbad' : 'upgood'}">${delta > 0 ? '▲' : '▼'} ${pct(Math.abs(delta))}</span>（对比前 ${w.days} 天）`
   $('tiles').innerHTML = [
-    ['Gasto en el periodo', money(cost), deltaTxt],
-    ['Media por dia', money(avg), state.range === 'todo' ? `contando solo los ${active} dias con registros` : `${active} de ${w.days} dias con uso`],
-    [`Previsto para ${MESL[now.getMonth()]}`, forecast === null ? '-' : money(forecast), `llevas ${money(month)} este mes`],
-    ['Memoria intermedia', pct(cache), `de lo que Claude vuelve a leer se cobra a precio rebajado. Ayudantes: ${pct(sub)} del gasto`],
+    ['期间花费', money(cost), deltaTxt],
+    ['日均花费', money(avg), state.range === 'todo' ? `只计有记录的 ${active} 天` : `${w.days} 天中有 ${active} 天在用`],
+    [`${MESL[now.getMonth()]}预计`, forecast === null ? '-' : money(forecast), `本月已花 ${money(month)}`],
+    ['缓存命中率', pct(cache), `的重复读取按缓存折扣价计费。子代理占花费的 ${pct(sub)}`],
   ].map(([l, v, d]) => `<div class="card tile"><div class="label">${l}</div><div class="value">${v}</div><div class="delta">${d}</div></div>`).join('')
 }
 
 function limits() {
   const L = D.limits || []
-  if (!L.length) { $('limits').innerHTML = '<p class="empty">Tus limites apareceran solos en cuanto Claude termine su proxima respuesta.</p>'; return }
+  if (!L.length) { $('limits').innerHTML = '<p class="empty">Claude 完成下一次回复后，限额会自动显示在这里。</p>'; return }
   $('limits').innerHTML = L.filter(l => l.kind === 'five_hour' || l.kind === 'seven_day').map(l => {
     const isWeek = l.kind === 'seven_day', span = isWeek ? 7 * DAY : 5 * 3600000
     const end = l.resetsAt ? Date.parse(l.resetsAt) : null
     const elapsed = end ? span - (end - Date.now()) : 0
     const pace = end && elapsed > span / 10 ? (l.pct * span) / elapsed : null
-    const st = pace === null ? null : pace > 100 ? ['critical', 'Te pasaras'] : pace > 90 ? ['warning', 'Muy justo'] : ['good', 'Vas bien']
+    const st = pace === null ? null : pace > 100 ? ['critical', '会超限'] : pace > 90 ? ['warning', '很紧张'] : ['good', '正常']
     const spent = D.w[isWeek ? 'w7' : 'w5']
-    const when = end ? (d => isWeek ? `el ${DIAS[(d.getDay() + 6) % 7]} a las ${d.toTimeString().slice(0, 5)}` : `a las ${d.toTimeString().slice(0, 5)}`)(new Date(end)) : ''
-    return `<div class="limit"><div class="row"><h2>${isWeek ? 'Semana' : 'Ultimas 5 horas'}</h2><span class="pct">${pct(l.pct)}</span></div>
+    const when = end ? (d => isWeek ? `${DIAS[(d.getDay() + 6) % 7]} ${d.toTimeString().slice(0, 5)}` : d.toTimeString().slice(0, 5))(new Date(end)) : ''
+    return `<div class="limit"><div class="row"><h2>${isWeek ? '每周' : '5 小时'}</h2><span class="pct">${pct(l.pct)}</span></div>
       <div class="track"><div class="fill" style="width:${Math.min(100, l.pct)}%;background:${st ? `var(--${st[0]})` : 'var(--s1)'}"></div>
-      ${pace !== null ? `<div class="pace" style="left:${Math.min(100, pace)}%" title="A este ritmo"></div>` : ''}</div>
-      <div class="row small"><span>${st ? `<span class="status"><i style="background:var(--${st[0]})"></i>${st[1]}</span> · a este ritmo llegas al ${pct(pace)}` : ''}</span>
-      <span>se reinicia ${when}</span></div>
-      ${spent && l.pct >= 1 ? `<div class="small muted">Cada 1% te cuesta unos ${money(spent / l.pct)} a precio de la API.</div>` : ''}</div>`
-  }).join('') + '<p class="small muted" style="margin-top:14px">La raya negra marca donde llegas si sigues al mismo ritmo hasta que se reinicie.</p>'
+      ${pace !== null ? `<div class="pace" style="left:${Math.min(100, pace)}%" title="按当前速度"></div>` : ''}</div>
+      <div class="row small"><span>${st ? `<span class="status"><i style="background:var(--${st[0]})"></i>${st[1]}</span> · 按当前速度将到 ${pct(pace)}` : ''}</span>
+      <span>${when} 重置</span></div>
+      ${spent && l.pct >= 1 ? `<div class="small muted">每 1% 约合 API 价格 ${money(spent / l.pct)}。</div>` : ''}</div>`
+  }).join('') + '<p class="small muted" style="margin-top:14px">黑色竖线表示保持当前速度到重置时会到达的位置。</p>'
 }
 
 function days(rows, w) {
@@ -392,13 +392,13 @@ function days(rows, w) {
   }
   const sel = cols.findIndex(c => key(c.date) === state.day)
   stacked($('days'), cols, {
-    label: 'Gasto por dia', selected: sel >= 0 ? sel : undefined,
+    label: '每日花费', selected: sel >= 0 ? sel : undefined,
     onClick: c => { state.day = state.day === key(c.date) ? null : key(c.date); render() },
-    tip: c => tipRows(`${DIAS[(c.date.getDay() + 6) % 7]} ${nice(c.date)}`, [...FAM.map((f, i) => [f.name, money(c.parts[i]), f.color]).filter((_, i) => c.parts[i] > 0), ['Total', `<b>${money(c.total)}</b>`]]),
+    tip: c => tipRows(`${DIAS[(c.date.getDay() + 6) % 7]} ${nice(c.date)}`, [...FAM.map((f, i) => [f.name, money(c.parts[i]), f.color]).filter((_, i) => c.parts[i] > 0), ['合计', `<b>${money(c.total)}</b>`]]),
   })
   const used = FAM.filter((_, i) => cols.some(c => c.parts[i] > 0))
   $('dayLegend').innerHTML = used.map(f => `<span><i style="background:${f.color}"></i>${f.name}</span>`).join('')
-  $('daysTable').innerHTML = `<table><tr><th>Dia</th>${used.map(f => `<th class="n">${f.name}</th>`).join('')}<th class="n">Total</th></tr>` +
+  $('daysTable').innerHTML = `<table><tr><th>日期</th>${used.map(f => `<th class="n">${f.name}</th>`).join('')}<th class="n">合计</th></tr>` +
     cols.slice().reverse().map(c => `<tr><td>${nice(c.date)}</td>${used.map(f => `<td class="n">${money(c.parts[FAM.indexOf(f)])}</td>`).join('')}<td class="n">${money(c.total)}</td></tr>`).join('') + '</table>'
 }
 
@@ -422,10 +422,10 @@ function cumulative() {
   const el = $('cum'), W = el.clientWidth || 500, H = 220, L = 46, B = 24, T = 8
   const max = Math.max(...series.filter(s => s === cur || s.full).flatMap(s => s.v), forecast || 0, prevLevel || 0, 0.01), tk = ticks(max), top = tk[tk.length - 1]
   const X = i => L + ((W - L - 8) * i) / 30, Y = v => T + (H - T - B) * (1 - v / top)
-  let s = `<svg viewBox="0 0 ${W} ${H}" height="${H}" role="img" aria-label="Gasto acumulado del mes">`
+  let s = `<svg viewBox="0 0 ${W} ${H}" height="${H}" role="img" aria-label="本月累计花费">`
   tk.forEach(v => { s += `<line class="gl" x1="${L}" x2="${W}" y1="${Y(v)}" y2="${Y(v)}"/><text x="${L - 6}" y="${Y(v) + 4}" text-anchor="end">${short(v)}</text>` })
-  ;[1, 8, 15, 22, 29].forEach(d => { s += `<text x="${X(d - 1)}" y="${H - 6}" text-anchor="middle">dia ${d}</text>` })
-  if (prevLevel) s += `<line x1="${L}" x2="${W}" y1="${Y(prevLevel)}" y2="${Y(prevLevel)}" stroke="var(--muted)" stroke-width="2" stroke-dasharray="6 5"/><text x="${W}" y="${Y(prevLevel) - 6}" text-anchor="end">total de ${prev.name}</text>`
+  ;[1, 8, 15, 22, 29].forEach(d => { s += `<text x="${X(d - 1)}" y="${H - 6}" text-anchor="middle">${d}日</text>` })
+  if (prevLevel) s += `<line x1="${L}" x2="${W}" y1="${Y(prevLevel)}" y2="${Y(prevLevel)}" stroke="var(--muted)" stroke-width="2" stroke-dasharray="6 5"/><text x="${W}" y="${Y(prevLevel) - 6}" text-anchor="end">${prev.name}合计</text>`
   if (forecast) s += `<line x1="${X(cur.v.length - 1)}" y1="${Y(soFar)}" x2="${X(cur.dim - 1)}" y2="${Y(forecast)}" stroke="var(--s1)" stroke-width="2" stroke-dasharray="4 4" opacity=".7"/>`
   series.filter(se => se === cur || se.full).reverse().forEach(se => {
     s += `<polyline fill="none" stroke="${se.color}" stroke-width="2" stroke-linejoin="round" points="${se.v.map((v, i) => `${X(i)},${Y(v)}`).join(' ')}"/>`
@@ -441,18 +441,18 @@ function cumulative() {
     const i = Math.max(0, Math.min(30, Math.round(((ev.clientX - box.left) / box.width) * ((W - L) / (W - L - 8)) * 30)))
     cross.setAttribute('x1', X(i)); cross.setAttribute('x2', X(i)); cross.style.display = ''
     const lines = series.filter(se => se === cur || se.full).map(se => [se.name, se.v[i] !== undefined ? money(se.v[i]) : '-', se.color])
-    if (forecast && i >= cur.v.length) lines.push(['Prevision', money(soFar + ((forecast - soFar) * (i - cur.v.length + 1)) / (cur.dim - cur.v.length)), 'var(--s1)'])
-    showTip(ev, tipRows(`Hasta el dia ${i + 1}`, lines))
+    if (forecast && i >= cur.v.length) lines.push(['预测', money(soFar + ((forecast - soFar) * (i - cur.v.length + 1)) / (cur.dim - cur.v.length)), 'var(--s1)'])
+    showTip(ev, tipRows(`截至 ${i + 1} 日`, lines))
   })
   hit.addEventListener('mouseleave', () => { cross.style.display = 'none'; hideTip() })
   const same = prev.full ? prev.v[Math.min(cur.v.length, prev.v.length) - 1] || 0 : 0
   const diff = same ? ((soFar - same) / same) * 100 : null
   const ref = prev.full ? prev.v[prev.v.length - 1] : prevLevel
   $('cumLegend').innerHTML = `<span><i style="background:var(--s1)"></i>${cur.name}</span>` +
-    (prev.full ? `<span><i style="background:var(--muted)"></i>${prev.name}</span>` : prevLevel ? `<span><i style="background:var(--muted)"></i>total de ${prev.name}</span>` : '') +
+    (prev.full ? `<span><i style="background:var(--muted)"></i>${prev.name}</span>` : prevLevel ? `<span><i style="background:var(--muted)"></i>${prev.name}合计</span>` : '') +
     `<p class="small" style="flex-basis:100%;margin:6px 0 0">` +
-    (diff !== null ? `A estas alturas vas un <b>${pct(Math.abs(diff))} ${diff > 0 ? 'por encima' : 'por debajo'}</b> de ${prev.name}. ` : '') +
-    (forecast ? `Al ritmo de este mes acabaras en <b>${money(forecast)}</b>${ref ? `, frente a ${money(ref)} de ${prev.name}` : ''}.` : '') + '</p>'
+    (diff !== null ? `同期比${prev.name}<b>${diff > 0 ? '高' : '低'} ${pct(Math.abs(diff))}</b>。` : '') +
+    (forecast ? `按本月速度，月底将达到 <b>${money(forecast)}</b>${ref ? `，${prev.name}为 ${money(ref)}` : ''}。` : '') + '</p>'
 }
 
 function projectsCard(rows) {
@@ -460,15 +460,15 @@ function projectsCard(rows) {
   for (const r of D.rows.filter(r => { const d = D.days[r[0]]; return d >= curW.from && d <= curW.to })) by.set(projOf[r[1]], (by.get(projOf[r[1]]) || 0) + r[3])
   const list = [...by].sort((a, b) => b[1] - a[1])
   const top = list.slice(0, 10), rest = list.slice(10).reduce((a, p) => a + p[1], 0)
-  if (rest > 0) top.push(['Otros', rest])
+  if (rest > 0) top.push(['其他', rest])
   const max = Math.max(...top.map(p => p[1]), 0.01), total = list.reduce((a, p) => a + p[1], 0) || 1
   $('projects').innerHTML = top.length ? top.map(([n, v]) =>
     `<div class="hbar${state.project === n ? ' on' : ''}" data-p="${esc(n)}" title="${esc(n)}"><span class="name">${esc(n)}</span>
      <div><div class="bar" style="width:${(v / max) * 100}%"></div></div><span class="v">${money(v)} · ${pct((v / total) * 100)}</span></div>`).join('')
-    : '<p class="empty">Sin gasto en este periodo.</p>'
+    : '<p class="empty">此时间段暂无花费。</p>'
   $('projects').querySelectorAll('.hbar').forEach(b => b.addEventListener('click', () => {
     const p = b.dataset.p
-    if (p === 'Otros') return
+    if (p === '其他') return
     setProject(state.project === p ? 'all' : p)
   }))
 }
@@ -482,11 +482,11 @@ function modelsCard(rows) {
   }
   const list = [...by].filter(([, v]) => v.cost >= 0.01).sort((a, b) => b[1].cost - a[1].cost)
   const total = list.reduce((a, [, v]) => a + v.cost, 0) || 1
-  $('models').innerHTML = list.length ? `<table><tr><th>Modelo</th><th class="n">Gasto</th><th class="n">%</th><th class="n">Respuestas</th><th class="n">Razonando</th></tr>` +
+  $('models').innerHTML = list.length ? `<table><tr><th>模型</th><th class="n">花费</th><th class="n">%</th><th class="n">回复数</th><th class="n">思考占比</th></tr>` +
     list.map(([m, v]) => `<tr><td><span class="dot" style="background:${FAM[famOf(m)].color}"></span>${esc(m)}</td><td class="n">${money(v.cost)}</td>
-      <td class="n">${pct((v.cost / total) * 100)}</td><td class="n">${v.n.toLocaleString('es-ES')}</td><td class="n">${v.think ? pct((v.think / v.out) * 100) : '-'}</td></tr>`).join('') +
-    '</table><p class="small muted">Razonando: la parte de lo que escribe el modelo que es razonamiento. Se cobra como texto escrito.</p>'
-    : '<p class="empty">Sin gasto en este periodo.</p>'
+      <td class="n">${pct((v.cost / total) * 100)}</td><td class="n">${v.n.toLocaleString('zh-CN')}</td><td class="n">${v.think ? pct((v.think / v.out) * 100) : '-'}</td></tr>`).join('') +
+    '</table><p class="small muted">思考占比：模型输出中属于思考的部分，按输出 token 计费。</p>'
+    : '<p class="empty">此时间段暂无花费。</p>'
 }
 
 function heat(w) {
@@ -502,11 +502,11 @@ function heat(w) {
   grid.forEach((row, d) => {
     s += `<span>${DIAS[d].slice(0, 3)}</span>` + row.map((v, h) => `<div class="c" data-d="${d}" data-h="${h}" style="${step(v) ? `background:${step(v)}` : ''}"></div>`).join('')
   })
-  $('heat').innerHTML = s + '</div><div class="legend" style="margin-top:10px"><span>Menos</span>' +
-    [1, 2, 3, 4, 5, 6, 7].map(i => `<i style="background:var(--q${i})"></i>`).join('') + '<span>Mas</span></div>'
+  $('heat').innerHTML = s + '</div><div class="legend" style="margin-top:10px"><span>少</span>' +
+    [1, 2, 3, 4, 5, 6, 7].map(i => `<i style="background:var(--q${i})"></i>`).join('') + '<span>多</span></div>'
   $('heat').querySelectorAll('.c').forEach(c => {
     const d = Number(c.dataset.d), h = Number(c.dataset.h)
-    c.addEventListener('mousemove', ev => showTip(ev, tipRows(`${DIAS[d]} de ${h}:00 a ${h + 1}:00`, [['Gasto', money(grid[d][h])]])))
+    c.addEventListener('mousemove', ev => showTip(ev, tipRows(`${DIAS[d]} ${h}:00–${h + 1}:00`, [['花费', money(grid[d][h])]])))
     c.addEventListener('mouseleave', hideTip)
   })
 }
@@ -519,11 +519,11 @@ function months() {
     for (const r of D.rows) if (inProject(r[1])) { const k = D.days[r[0]].slice(0, 7); by.set(k, (by.get(k) || 0) + r[3]) }
     cols = [...by].sort().map(([k, v]) => ({ k, total: v }))
   }
-  cols = cols.slice(-12).map(c => ({ ...c, parts: [c.total], label: `${MES[Number(c.k.slice(5)) - 1]} ${c.k.slice(2, 4)}` }))
-  if (!cols.length) { $('months').innerHTML = '<p class="empty">Sin datos.</p>'; return }
+  cols = cols.slice(-12).map(c => ({ ...c, parts: [c.total], label: `${c.k.slice(2, 4)}年${MES[Number(c.k.slice(5)) - 1]}` }))
+  if (!cols.length) { $('months').innerHTML = '<p class="empty">暂无数据。</p>'; return }
   stacked($('months'), cols, {
-    h: 220, colors: ['var(--s1)'], label: 'Gasto por meses',
-    tip: c => tipRows(`${MESL[Number(c.k.slice(5)) - 1]} ${c.k.slice(0, 4)}`, [['Gasto', money(c.total)]]),
+    h: 220, colors: ['var(--s1)'], label: '每月花费',
+    tip: c => tipRows(`${c.k.slice(0, 4)}年${MESL[Number(c.k.slice(5)) - 1]}`, [['花费', money(c.total)]]),
   })
 }
 
@@ -541,14 +541,14 @@ function convs(rows) {
   const { k, dir } = state.sort
   const list = [...by].filter(([s]) => match(D.sessions[s][0]) || match(D.sessions[s][1]))
     .sort((a, b) => (get[k](a) > get[k](b) ? 1 : get[k](a) < get[k](b) ? -1 : 0) * dir).slice(0, state.q ? 50 : 15)
-  $('convNote').textContent = state.day ? `Gasto del ${nice(parse(state.day))}.` : 'Gasto dentro del periodo elegido. Pulsa una columna para ordenar.'
+  $('convNote').textContent = state.day ? `${nice(parse(state.day))}的花费。` : '所选时间段内的花费。点击表头可排序。'
   const th = (key_, label, n) => `<th data-k="${key_}"${n ? ' class="n"' : ''}>${label}${k === key_ ? ` <span class="arrow">${dir < 0 ? '▼' : '▲'}</span>` : ''}</th>`
-  $('convs').innerHTML = list.length ? `<table><tr>${th('title', 'Conversacion')}${th('project', 'Proyecto')}${th('last', 'Ultimo dia')}${th('n', 'Respuestas', 1)}${th('cost', 'Gasto', 1)}</tr>` +
+  $('convs').innerHTML = list.length ? `<table><tr>${th('title', '对话')}${th('project', '项目')}${th('last', '最后一天')}${th('n', '回复数', 1)}${th('cost', '花费', 1)}</tr>` +
     list.map(([s, v]) => {
       const main = FAM[v.fam.indexOf(Math.max(...v.fam))]
-      return `<tr><td><span class="dot" style="background:${main.color}" title="Sobre todo ${main.name}"></span>${esc(D.sessions[s][0])}</td><td>${esc(D.sessions[s][1])}</td>
-        <td>${nice(parse(v.last))}</td><td class="n">${v.n.toLocaleString('es-ES')}</td><td class="n"><b>${money(v.cost)}</b></td></tr>`
-    }).join('') + '</table>' : '<p class="empty">Sin conversaciones que encajen.</p>'
+      return `<tr><td><span class="dot" style="background:${main.color}" title="主要使用 ${main.name}"></span>${esc(D.sessions[s][0])}</td><td>${esc(D.sessions[s][1])}</td>
+        <td>${nice(parse(v.last))}</td><td class="n">${v.n.toLocaleString('zh-CN')}</td><td class="n"><b>${money(v.cost)}</b></td></tr>`
+    }).join('') + '</table>' : '<p class="empty">没有匹配的对话。</p>'
   $('convs').querySelectorAll('th[data-k]').forEach(t => t.addEventListener('click', () => {
     state.sort = { k: t.dataset.k, dir: state.sort.k === t.dataset.k ? -state.sort.dir : t.dataset.k === 'title' || t.dataset.k === 'project' ? 1 : -1 }
     lists()
@@ -560,11 +560,11 @@ function promptsCard(w) {
   const list = D.prompts.filter(p => p.ts >= from && inProject(p.s) && (!state.day || key(new Date(p.ts)) === state.day) && match(p.text)).slice(0, state.q ? 40 : 10)
   $('prompts').innerHTML = list.length ? '<table>' + list.map(p =>
     `<tr><td><div class="t" title="${esc(p.text)}">${esc(p.text)}</div><span class="small muted">${esc(D.sessions[p.s][1])} · ${nice(new Date(p.ts))}</span></td><td class="n"><b>${money(p.cost)}</b></td></tr>`).join('') + '</table>'
-    : '<p class="empty">Ninguna que encaje.</p>'
+    : '<p class="empty">没有匹配的提问。</p>'
 }
 
 function tipsCard() {
-  $('tips').innerHTML = D.tips.length ? D.tips.map(t => `<li><b>${esc(t.title)}.</b> <span class="small">${esc(t.detail)}</span></li>`).join('') : '<li>Nada que mejorar esta semana.</li>'
+  $('tips').innerHTML = D.tips.length ? D.tips.map(t => `<li><b>${esc(t.title)}。</b> <span class="small">${esc(t.detail)}</span></li>`).join('') : '<li>本周没有需要改进的地方。</li>'
 }
 
 // The plan: prices from claude.com/pricing (checked 11/11/2026). Weekly allowance in Pro units: Pro 1, Max 5, Ultra 10.
@@ -578,9 +578,9 @@ const hasFive = (D.limits || []).some(l => l.kind === 'five_hour')
 state.plan = localStorage.getItem('uso-plan') || ((D.limits || []).length && !hasFive ? 'ultra' : 'max')
 const dur = ms => {
   const h = Math.round(ms / 3600000)
-  return h >= 24 ? `${Math.floor(h / 24)} ${Math.floor(h / 24) === 1 ? 'dia' : 'dias'}${h % 24 ? ` y ${h % 24} h` : ''}` : `${Math.max(1, h)} h`
+  return h >= 24 ? `${Math.floor(h / 24)} 天${h % 24 ? ` ${h % 24} 小时` : ''}` : `${Math.max(1, h)} 小时`
 }
-const at = d => `el ${DIAS[(d.getDay() + 6) % 7]} a las ${d.toTimeString().slice(0, 5)}`
+const at = d => `${DIAS[(d.getDay() + 6) % 7]} ${d.toTimeString().slice(0, 5)}`
 
 // Where the current pace takes a limit, and when it would reach 100%.
 function pace(kind) {
@@ -599,18 +599,18 @@ function hero() {
   let color, text
   if (w.hit) {
     color = 'critical'
-    text = `<b>Al ritmo de esta semana te quedaras sin limite semanal ${at(new Date(w.hit))}</b>, ${dur(w.end - w.hit)} antes de que se reinicie (${at(new Date(w.end))}).`
+    text = `<b>按本周速度，你将在 ${at(new Date(w.hit))} 用完周限额</b>，比重置时间（${at(new Date(w.end))}）早 ${dur(w.end - w.hit)}。`
   } else if (w.pace > 90) {
     color = 'warning'
-    text = `<b>Vas justo:</b> a este ritmo acabaras la semana cerca del ${pct(w.pace)} del limite. Se reinicia ${at(new Date(w.end))}.`
+    text = `<b>比较紧张：</b>按当前速度，本周结束时将用到限额的约 ${pct(w.pace)}。${at(new Date(w.end))} 重置。`
   } else if (w.pace) {
     color = 'good'
-    text = `<b>Vas bien:</b> a este ritmo acabaras la semana en el ${pct(w.pace)} del limite. Se reinicia ${at(new Date(w.end))}.`
+    text = `<b>状态良好：</b>按当前速度，本周结束时将用到限额的 ${pct(w.pace)}。${at(new Date(w.end))} 重置。`
   } else {
     color = 'good'
-    text = `Llevas el ${pct(w.l.pct)} del limite semanal; la semana acaba de empezar.`
+    text = `已用周限额的 ${pct(w.l.pct)}；本周刚开始。`
   }
-  if (f && f.hit) text += ` En la ventana de 5 horas llegaras al tope a las ${new Date(f.hit).toTimeString().slice(0, 5)}, y se libera a las ${new Date(f.end).toTimeString().slice(0, 5)}.`
+  if (f && f.hit) text += ` 5 小时窗口将在 ${new Date(f.hit).toTimeString().slice(0, 5)} 用满，${new Date(f.end).toTimeString().slice(0, 5)} 释放。`
   $('hero').innerHTML = `<i style="background:var(--${color})"></i><div>${text}</div>`
   $('hero').style.display = 'flex'
 }
@@ -621,7 +621,7 @@ function plan() {
   document.querySelectorAll('#plans button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.p === state.plan)))
   const P = D.plan, mine = PLANS[state.plan]
   if (!P || !P.mixDpu) {
-    $('plan').innerHTML = '<p class="empty">Aun no hay gasto de los ultimos 30 dias para calcularlo.</p>'
+    $('plan').innerHTML = '<p class="empty">最近 30 天暂无花费，无法计算。</p>'
     return
   }
   // Your readings measure the limit of the plan you have, the one picked with the buttons.
@@ -635,41 +635,41 @@ function plan() {
     // Fable can take at most half of the weekly limit on Max and Ultra.
     const cap = i === 1 && state.plan !== 'pro' ? 0.5 : 1
     const v = U * F.dpu * cap
-    const how = `${F.measured ? 'peso medido' : 'peso estimado por su precio'}, ${F.own ? 'con tu uso real' : 'como si hiciera tu trabajo de Opus'}`
-    return `<tr><td style="white-space:nowrap"><span class="dot" style="background:${f.color}"></span>Solo ${f.name}${cap < 1 ? '*' : ''}</td>
-      <td class="n">${money(v)}</td><td class="n"><b>${money(v * MONTH_WEEKS)}</b></td><td class="n">${((v * MONTH_WEEKS) / mine.price).toLocaleString('es-ES', { maximumFractionDigits: 0 })}x</td>
+    const how = `${F.measured ? '实测权重' : '按价格估算的权重'}，${F.own ? '基于你的实际使用' : '假设它完成你的 Opus 工作'}`
+    return `<tr><td style="white-space:nowrap"><span class="dot" style="background:${f.color}"></span>仅 ${f.name}${cap < 1 ? '*' : ''}</td>
+      <td class="n">${money(v)}</td><td class="n"><b>${money(v * MONTH_WEEKS)}</b></td><td class="n">${((v * MONTH_WEEKS) / mine.price).toLocaleString('zh-CN', { maximumFractionDigits: 0 })}x</td>
       <td class="small">${how}</td></tr>`
   }).join('')
   const others = Object.entries(PLANS).filter(([k]) => k !== state.plan)
-    .map(([, p]) => `${p.name} (${p.price} $) unos ${money((month / mine.mult) * p.mult)}`).join(' · ')
+    .map(([, p]) => `${p.name}（$${p.price}）约 ${money((month / mine.mult) * p.mult)}`).join(' · ')
   const size = P.cap
-    ? `El tamano de tu limite sale de ${P.readings} ${P.readings === 1 ? 'lectura' : 'lecturas'} de tu porcentaje semanal desde el ${new Date(P.first).toLocaleDateString('es-ES')}, comparadas con lo que gastaste en esa semana.`
-    : 'Aun no hay lecturas de tu limite semanal, asi que el tamano del limite es el medido en Ultra, a la mitad para Max y a la decima parte para Pro.'
-  $('plan').innerHTML = `<div><div class="big">${money(month)} <span class="small" style="font-weight:400">al mes en precio de API</span></div>
-    <p class="small" style="margin:4px 0 12px">Usando Claude como lo usas ahora. Pagas ${mine.price} $: <b>te devuelve unas ${times.toLocaleString('es-ES', { maximumFractionDigits: 0 })} veces lo que cuesta</b>${mine.credits ? `, y ademas trae ${mine.credits} $ al mes en creditos de API` : ''}. En los ultimos 30 dias has aprovechado el <b>${pct(used)}</b> de lo que da${used > 100 ? ', mas de lo que cabe en tu limite de ahora: alguna semana el limite fue mayor o usaste creditos' : ''}.</p>
-    <p class="note">Con tu misma forma de usarlo: ${others}.</p>
-    <p class="note">Cada modelo gasta el limite a su ritmo, no en proporcion a su precio, y releer la cache gasta muy poco limite. Los pesos son los medidos en una suscripcion en septiembre de 2026. Haiku 5.5 y Fable 5.2 salieron despues, asi que su peso es el del modelo anterior ajustado por su bajada de precio, que es lo que paso de Opus 5 a Opus 5.5. ${size}</p></div>
-    <div><table><tr><th>Si usas</th><th class="n">Semana completa</th><th class="n">Al mes</th><th class="n">Tu cuota</th><th>Dato</th></tr>${rows}</table>
-    <p class="note">* Fable puede gastar como mucho la mitad del limite semanal en Max y Ultra, por eso su fila es la mitad.</p></div>`
+    ? `你的限额大小来自 ${new Date(P.first).toLocaleDateString('zh-CN')} 以来 ${P.readings} 次周百分比读数，与同期花费对比得出。`
+    : '还没有你的周限额读数，因此限额大小采用 Ultra 的实测值，Max 取一半，Pro 取十分之一。'
+  $('plan').innerHTML = `<div><div class="big">${money(month)} <span class="small" style="font-weight:400">每月（按 API 价格）</span></div>
+    <p class="small" style="margin:4px 0 12px">按你现在的用法估算。你付 $${mine.price}：<b>约值售价的 ${times.toLocaleString('zh-CN', { maximumFractionDigits: 0 })} 倍</b>${mine.credits ? `，另含每月 $${mine.credits} 的 API 额度` : ''}。最近 30 天你用掉了其中的 <b>${pct(used)}</b>${used > 100 ? '，超过了当前限额能容纳的量：可能某周限额更高，或用了额度' : ''}。</p>
+    <p class="note">同样的用法下：${others}。</p>
+    <p class="note">各模型消耗限额的速度不同，并不与价格成正比；读取缓存几乎不消耗限额。权重为 2026 年 9 月在订阅上的实测值。Haiku 5.5 和 Fable 5.2 发布较晚，其权重取上一代模型并按降价幅度调整（与 Opus 5 到 Opus 5.5 的情况一致）。${size}</p></div>
+    <div><table><tr><th>如果只用</th><th class="n">整周</th><th class="n">每月</th><th class="n">相对月费</th><th>依据</th></tr>${rows}</table>
+    <p class="note">* 在 Max 和 Ultra 上，Fable 最多只能用一半的周限额，所以这一行按一半计算。</p></div>`
 }
 
 function limitHistory() {
   const H = (D.history || []).filter(h => h[0] >= D.generated - 21 * DAY)
   if (H.length < 2) {
-    $('history').innerHTML = '<p class="note">El historial del limite semanal se guarda desde hoy. Aqui veras como sube cada semana.</p>'
+    $('history').innerHTML = '<p class="note">周限额历史从今天开始记录，之后可在这里看到每周的变化。</p>'
     return
   }
   const el = $('history'), W = el.clientWidth || 500, Hh = 120, L = 34, B = 20, T = 8
   const t0 = H[0][0], t1 = D.generated
   const X = t => L + ((W - L) * (t - t0)) / Math.max(1, t1 - t0), Y = v => T + (Hh - T - B) * (1 - Math.min(110, v) / 110)
-  let s = `<svg viewBox="0 0 ${W} ${Hh}" height="${Hh}" role="img" aria-label="Limite semanal en el tiempo">`
+  let s = `<svg viewBox="0 0 ${W} ${Hh}" height="${Hh}" role="img" aria-label="周限额变化">`
   ;[0, 50, 100].forEach(v => { s += `<line class="gl" x1="${L}" x2="${W}" y1="${Y(v)}" y2="${Y(v)}"${v === 100 ? ' stroke-dasharray="4 4"' : ''}/><text x="${L - 6}" y="${Y(v) + 4}" text-anchor="end">${v}%</text>` })
   let seg = []
   const flush = () => { if (seg.length) s += `<polyline fill="none" stroke="var(--s1)" stroke-width="2" points="${seg.join(' ')}"/>`; seg = [] }
   H.forEach((h, i) => { if (i && h[2] !== H[i - 1][2]) flush(); seg.push(`${X(h[0])},${Y(h[1])}`) })
   flush()
-  s += `<text x="${L}" y="${Hh - 4}">${nice(new Date(t0))}</text><text x="${W}" y="${Hh - 4}" text-anchor="end">ahora</text></svg>`
-  el.innerHTML = `<h2 style="margin:18px 0 6px;font-size:13px">Limite semanal, ultimas semanas</h2>` + s
+  s += `<text x="${L}" y="${Hh - 4}">${nice(new Date(t0))}</text><text x="${W}" y="${Hh - 4}" text-anchor="end">现在</text></svg>`
+  el.innerHTML = `<h2 style="margin:18px 0 6px;font-size:13px">周限额（最近几周）</h2>` + s
 }
 
 function last24() {
@@ -694,8 +694,8 @@ function last24() {
     if (i0 >= 0) shade = [i0, 23]
   }
   stacked($('last24'), cols, {
-    h: 200, label: 'Gasto por hora en las ultimas 24 horas', shade,
-    tip: c => tipRows(`De ${c.h}:00 a ${c.h + 1}:00`, [...FAM.map((x, i) => [x.name, money(c.parts[i]), x.color]).filter((_, i) => c.parts[i] > 0), ['Total', `<b>${money(c.total)}</b>`]]),
+    h: 200, label: '最近 24 小时每小时花费', shade,
+    tip: c => tipRows(`${c.h}:00–${c.h + 1}:00`, [...FAM.map((x, i) => [x.name, money(c.parts[i]), x.color]).filter((_, i) => c.parts[i] > 0), ['合计', `<b>${money(c.total)}</b>`]]),
   })
 }
 
@@ -737,8 +737,8 @@ function lists(rows = lastRows) {
 }
 function setProject(p) { state.project = p; render() }
 
-$('stamp').textContent = `Actualizado el ${now.toLocaleDateString('es-ES')} a las ${now.toTimeString().slice(0, 5)} · datos desde el ${parse(D.days[0] || today).toLocaleDateString('es-ES')} · gasto calculado a precio de la API · se actualiza sola mientras usas Claude`
-$('project').innerHTML = '<option value="all">Todos los proyectos</option>' + projects.sort((a, b) => a.localeCompare(b, 'es')).map(p => `<option>${esc(p)}</option>`).join('')
+$('stamp').textContent = `更新于 ${now.toLocaleDateString('zh-CN')} ${now.toTimeString().slice(0, 5)} · 数据始于 ${parse(D.days[0] || today).toLocaleDateString('zh-CN')} · 花费按 API 价格计算 · 使用 Claude 时自动更新`
+$('project').innerHTML = '<option value="all">全部项目</option>' + projects.sort((a, b) => a.localeCompare(b, 'zh-CN')).map(p => `<option>${esc(p)}</option>`).join('')
 $('project').addEventListener('change', e => setProject(e.target.value))
 $('chipX').addEventListener('click', () => setProject('all'))
 $('dayX').addEventListener('click', () => { state.day = null; render() })

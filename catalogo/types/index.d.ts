@@ -3,6 +3,6 @@ export type Usage = { ctx?: number; week?: number; tokens?: number }
 
 declare module 'claude-code' {
   interface PluginState {
-    razonamiento: { blocks: Block[]; usage: Usage }
+    'thinking-translate': { blocks: Block[]; usage: Usage }
   }
 }

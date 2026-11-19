@@ -1,11 +1,11 @@
 import { expect, mock, test } from 'claude-code/testing'
 
 const PANE = {
-  plugin: 'razonamiento',
+  plugin: 'thinking-translate',
   component: 'Pane',
-  requestId: 'razonamiento',
+  requestId: 'thinking-translate',
   props: {
-    title: 'Razonamiento',
+    title: '思考过程',
     isFocused: false,
     bodyColumns: 60,
     placement: 'dock',
@@ -38,13 +38,13 @@ for (const [edgeOk, via] of [
 ] as const) {
   test(`the pane shows the ${via} translation with no label`, { options: { translateTo: 'Spanish', translator: 'edge' } }, async ($, on) => {
     engine(on as any, edgeOk)
-    on('command.register', () => ({ value: { command: 'razonamiento' } }))
+    on('command.register', () => ({ value: { command: 'thinking-translate' } }))
     on('ui.open', () => ({ value: { isPlaced: true } }))
     on('session.start', (_, e) => ({ cwd: e.cwd }))
     await $.session.start({ cwd: '/', surface: 'desktop', isInteractive: true })
     for await (const _ of $.turn.step({ turnId: 't1', index: 0, model: 'opus', messageCount: 1 }));
     // Let the unawaited translation settle.
-    for (let i = 0; i < 20; i++) await Promise.resolve()
+    for (let i = 0; i < 200; i++) await Promise.resolve()
 
     const ui = await $.ui.mount({ ...PANE, surface: 'desktop' })
     expect((await ui.find({ type: 'Markdown', text: /^Hola$/ }))?.text).toBe('Hola')
@@ -64,7 +64,7 @@ for (const [edgeOk, via] of [
     //: yield { kind: 'thinking', index: 0, text: 'Hello' }
     //: return { turnId: e.turnId, index: e.index, answer: '', toolUses: [], stopReason: 'end_turn', usage: null, id: 'm1' }
   //: })
-  //: on('command.register', () => ({ value: { command: 'razonamiento' } }))
+  //: on('command.register', () => ({ value: { command: 'thinking-translate' } }))
   //: on('ui.open', () => ({ value: { isPlaced: true } }))
   //: on('session.start', (_, e) => ({ cwd: e.cwd }))
   //: await $.session.start({ cwd: '/', surface: 'desktop', isInteractive: true })

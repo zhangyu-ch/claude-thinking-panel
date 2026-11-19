@@ -1,7 +1,7 @@
 {
-  "name": "razonamiento",
-  "displayName": "Razonamiento",
-  "version": "0.8.0",
+  "name": "thinking-translate",
+  "displayName": "Thinking Translate",
+  "version": "0.9.0",
   "description": "Shows Claude's thinking live in a side panel next to the chat in Claude Code, with optional translation and a banner with your context and weekly limit",
   "author": {
     "name": "zhangyu-ch",

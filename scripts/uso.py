@@ -1,4 +1,4 @@
-"""Usage index for the Razonamiento panel.
+"""Usage index for the thinking-translate panel.
 
 Reads Claude Code's transcripts (~/.claude/projects/**/*.jsonl) incrementally, by byte offset,
 into a SQLite file that keeps every response forever (the transcripts are deleted after 30 days),
@@ -283,9 +283,9 @@ def index(db, budget):
 
 def project(cwd):
     if not cwd:
-        return 'Sin carpeta'
+        return '无目录'
     if 'scratch-workspaces' in cwd:
-        return 'Sin carpeta'
+        return '无目录'
     cwd = re.split(r'[\\/]\.claude[\\/]worktrees[\\/]', cwd)[0]
     return os.path.basename(cwd.rstrip('\\/')) or cwd
 
@@ -360,11 +360,11 @@ def report(db, w5, w7):
         names[sess] = (project(cwd), title)
     by_project = {}
     for sess, c in q('select sess, sum(cost) from msgs where ts>=? group by sess', now - 30 * day):
-        p = names.get(sess, ('Sin carpeta', None))[0]
+        p = names.get(sess, ('无目录', None))[0]
         by_project[p] = by_project.get(p, 0) + c
     out['projects'] = [{'name': p, 'cost': round(c, 2)} for p, c in sorted(by_project.items(), key=lambda x: -x[1])[:8]]
 
-    out['sessions'] = [{'title': names.get(s, (None, None))[1] or 'Sin titulo', 'project': names.get(s, ('Sin carpeta',))[0], 'cost': round(c, 2)}
+    out['sessions'] = [{'title': names.get(s, (None, None))[1] or '无标题', 'project': names.get(s, ('无目录',))[0], 'cost': round(c, 2)}
                        for s, c in q('select sess, sum(cost) from msgs where ts>=? group by sess order by 2 desc limit 5', week0)]
     out['prompts'] = [{'text': t, 'ts': ts, 'cost': round(c, 2)} for t, ts, c in q(
         'select p.text, p.ts, sum(m.cost) c from msgs m join prompts p on p.id=m.turn where m.ts>=? group by m.turn order by c desc limit 5', week0)]
@@ -383,27 +383,27 @@ def tips(q, week0, week_cost, c7):
         if os.path.basename(name).lower() in seen or len(seen) == 2:
             continue
         seen.add(os.path.basename(name).lower())
-        found.append({'title': f'{os.path.basename(name)} leido {n} veces en una misma conversacion',
-                      'detail': 'Cada lectura vuelve a meter el archivo entero en la conversacion. Pide leer solo la parte que hace falta.'})
+        found.append({'title': f'{os.path.basename(name)} 在同一对话中被读取了 {n} 次',
+                      'detail': '每次读取都会把整个文件重新放进对话。只读需要的部分即可。'})
     for cmd, n in q("""select target, count(*) n from tools where ts>=? and name in ('Bash','PowerShell') and target<>''
                        group by sess, target having n>=15 order by n desc limit 1""", week0):
         cmd = ' '.join(re.sub(r'^cd\s+("[^"]*"|\S+)\s*(&&|;)\s*', '', cmd).split())
-        found.append({'title': f'Un comando repetido {n} veces: {cmd[:60]}',
-                      'detail': 'Suele ser una espera haciendo sondeos. Un aviso al terminar gasta menos.'})
+        found.append({'title': f'一条命令重复执行了 {n} 次：{cmd[:60]}',
+                      'detail': '这通常是在轮询等待。改为完成时通知会更省。'})
     big = q('select count(*), coalesce(sum(chars),0) from tools where ts>=? and chars>100000', week0)[0]
     if big[0] >= 5:
-        found.append({'title': f'{big[0]} resultados de herramientas enormes esta semana',
-                      'detail': f'Unos {round(big[1] / 4000)}k tokens metidos de golpe en el contexto. Limitar la salida de comandos y lecturas lo evita.'})
+        found.append({'title': f'本周有 {big[0]} 次超大的工具输出',
+                      'detail': f'约 {round(big[1] / 4000)}k token 一次性涌入上下文。限制命令输出和读取范围可以避免。'})
     if week_cost and (c7[3] or 0) / week_cost > 0.3:
-        found.append({'title': f'El {round(100 * c7[3] / week_cost)}% del gasto de la semana fue con mas de 200k de contexto',
-                      'detail': 'Cada respuesta paga la conversacion entera. Compactar o empezar de cero antes abarata todo lo que viene despues.'})
+        found.append({'title': f'本周 {round(100 * c7[3] / week_cost)}% 的花费发生在上下文超过 200k 时',
+                      'detail': '每次回复都要为整段对话付费。尽早压缩或开新对话，后面的花费都会更低。'})
     rows = q("select agent, sum(cost) c from msgs where ts>=? and sub=1 and agent is not null group by agent order by c", week0)
     if len(rows) >= 5:
         median = rows[len(rows) // 2][1]
         top = rows[-1]
         if top[1] > 5 and top[1] > 6 * median:
-            found.append({'title': f'Un ayudante costo {top[1]:.0f} $, {top[1] / (median or 1):.0f} veces lo normal',
-                          'detail': 'Revisa que tarea se le encargo: una tarea mas acotada o en varios ayudantes sale mas barata.'})
+            found.append({'title': f'一个子代理花了 ${top[1]:.0f}，是平常的 {top[1] / (median or 1):.0f} 倍',
+                          'detail': '检查分配给它的任务：缩小范围或拆给多个子代理会更便宜。'})
     return found
 
 

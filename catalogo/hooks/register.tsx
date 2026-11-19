@@ -4,8 +4,8 @@ import type { EngineInterface, Register } from 'claude-code'
 
 import type { Block, Usage } from '../types'
 
-const PANE = 'razonamiento'
-const TITLE = 'Razonamiento'
+const PANE = 'thinking-translate'
+const TITLE = '思考过程'
 
 // Edge first (free, no key); if it fails, Haiku at low effort through the person's own Claude session.
 // Answers which engine translated it, so the pane can show it.
@@ -47,12 +47,12 @@ async function compact($: EngineInterface) {
     await $.command.run({ command: 'compact' })
     void measure($).catch(() => undefined)
   } catch (err) {
-    $.ui.toast(`No se ha podido compactar: ${err instanceof Error ? err.message : String(err)}`)
+    $.ui.toast(`压缩失败：${err instanceof Error ? err.message : String(err)}`)
   }
 }
 
-const blocks = atom({ plugin: 'razonamiento', key: 'blocks' } as const, [])
-const usage = atom({ plugin: 'razonamiento', key: 'usage' } as const, {})
+const blocks = atom({ plugin: 'thinking-translate', key: 'blocks' } as const, [])
+const usage = atom({ plugin: 'thinking-translate', key: 'usage' } as const, {})
 
 // Markdown takes tab and newline as its only control characters.
 const clean = (text: string) => text.replace(/\r\n?/g, '\n').replace(/[\u0000-\u0008\u000b-\u001f\u007f]/g, '')
@@ -73,20 +73,20 @@ const cut = (text: unknown, n = 60) => {
   return t.length > n ? `${t.slice(0, n)}...` : t
 }
 
-// One short line saying what a tool call does, in Spanish; undefined for the app's own bookkeeping tools.
+// One short line saying what a tool call does, in Chinese; undefined for the app's own bookkeeping tools.
 function action(e: Record<string, unknown> & { tool: string }) {
   const t = e.tool
   if (/^mcp__ccd_|^ToolSearch$|^TodoWrite$|^Task(Create|Update|List|Get)$/.test(t)) return undefined
-  if (t === 'Read') return `Lee ${name(e.file_path)}`
-  if (t === 'Edit' || t === 'MultiEdit') return `Edita ${name(e.file_path)}`
-  if (t === 'Write') return `Escribe ${name(e.file_path)}`
-  if (t === 'Bash' || t === 'PowerShell') return `Ejecuta: ${cut(e.description || e.command)}`
-  if (t === 'Grep' || t === 'Glob') return `Busca ${cut(e.pattern, 40)}`
-  if (t === 'Agent') return `Lanza un ayudante: ${cut(e.description)}`
-  if (t === 'Skill') return `Usa la habilidad ${cut(e.skill, 40)}`
-  if (typeof e.url === 'string') return `Abre ${cut(e.url)}`
-  if (typeof e.query === 'string' || /search/i.test(t)) return `Busca en la web: ${cut(e.query ?? e.objective)}`
-  return `Usa ${t.replace(/^mcp__[^_]+(?:_[^_]+)*?__/, '')}`
+  if (t === 'Read') return `读取 ${name(e.file_path)}`
+  if (t === 'Edit' || t === 'MultiEdit') return `编辑 ${name(e.file_path)}`
+  if (t === 'Write') return `写入 ${name(e.file_path)}`
+  if (t === 'Bash' || t === 'PowerShell') return `执行：${cut(e.description || e.command)}`
+  if (t === 'Grep' || t === 'Glob') return `搜索 ${cut(e.pattern, 40)}`
+  if (t === 'Agent') return `启动子代理：${cut(e.description)}`
+  if (t === 'Skill') return `使用技能 ${cut(e.skill, 40)}`
+  if (typeof e.url === 'string') return `打开 ${cut(e.url)}`
+  if (typeof e.query === 'string' || /search/i.test(t)) return `网页搜索：${cut(e.query ?? e.objective)}`
+  return `调用 ${t.replace(/^mcp__[^_]+(?:_[^_]+)*?__/, '')}`
 }
 
 
@@ -97,8 +97,8 @@ export const register: Register = (on, options) => {
 
   on('session.start', async ($, e, next) => {
     await $.command.register({
-      name: 'razonamiento',
-      description: 'Abre el panel con el razonamiento de Claude',
+      name: 'thinking-translate',
+      description: '打开 Claude 思考过程面板',
     })
     void $.ui.open({ id: PANE, title: TITLE })
     void measure($).catch(() => undefined)
@@ -107,10 +107,10 @@ export const register: Register = (on, options) => {
   })
 
 
-  on('command.run', { command: 'razonamiento' }, async $ => {
+  on('command.run', { command: 'thinking-translate' }, async $ => {
     await $.ui.open({ id: PANE, title: TITLE })
 
-    return { text: 'Panel de razonamiento abierto.' }
+    return { text: '思考过程面板已打开。' }
   })
 
   on('prompt.submit', async ($, e, next) => {
@@ -233,7 +233,7 @@ export const register: Register = (on, options) => {
     // The banner: the weekly projection and the context in use, in plain text.
     const { ctx, week, tokens } = await read($, usage)
     const used = [
-      ctx !== undefined && `Contexto ${ctx}%`,
+      ctx !== undefined && `上下文 ${ctx}%`,
       tokens !== undefined && `${Math.round(tokens / 1000)}k`,
     ].filter(Boolean).join(' · ')
     // From 200k tokens in use the context goes red: time to compact.
@@ -241,7 +241,7 @@ export const register: Register = (on, options) => {
 
     return (
       <Box flexDirection="column">
-        {list.length === 0 && <Text dimColor>Sin razonamiento todavia.</Text>}
+        {list.length === 0 && <Text dimColor>暂无思考内容。</Text>}
         {list.map(b =>
           b.isAction ? (
             <Text dimColor>{`→ ${b.text}`}</Text>
@@ -254,7 +254,7 @@ export const register: Register = (on, options) => {
           ) : (
             <Box flexDirection="column" marginTop={1}>
               {b.who !== 'Claude' && <Text bold>{b.who}</Text>}
-              {!b.isDone && <Text bold>pensando...</Text>}
+              {!b.isDone && <Text bold>思考中...</Text>}
               <Markdown text={clean(b.es ?? b.text)} />
             </Box>
           ),
@@ -262,12 +262,12 @@ export const register: Register = (on, options) => {
         <Box flexDirection="row" alignItems="center" borderStyle="round" paddingX={1} marginTop={1}>
           <Box flexGrow={1} flexShrink={1}>
             <Text wrap="truncate-end">
-              {week === undefined && !used && 'Sin datos de uso todavia'}
-              {week !== undefined && `Uso ${week}%${used ? ' · ' : ''}`}
+              {week === undefined && !used && '暂无用量数据'}
+              {week !== undefined && `周用量 ${week}%${used ? ' · ' : ''}`}
               {used && <Text color={isFull ? 'error' : undefined} bold={isFull}>{used}</Text>}
             </Text>
           </Box>
-          <Button key="compactar" label="Compactar" onPress={() => compact($)} />
+          <Button key="compact" label="压缩" onPress={() => compact($)} />
         </Box>
       </Box>
     )
