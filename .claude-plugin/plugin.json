@@ -1,7 +1,7 @@
 {
   "name": "thinking-translate",
-  "version": "0.9.0",
-  "description": "Shows Claude's thinking live in a side panel next to the chat, with optional translation, and a switch to a view of your usage and spending",
+  "version": "0.10.0",
+  "description": "Shows Claude's thinking live in a side panel next to the chat, translated into your language",
   "author": {
     "name": "zhangyu-ch"
   },

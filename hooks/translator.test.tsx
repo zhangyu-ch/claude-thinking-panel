@@ -14,9 +14,8 @@ const PANE = {
   },
 } as const
 
-// Stands for the engine: one main-agent step that thinks one block, then the usage the banner reads.
+// Stands for the engine: one main-agent step that thinks one block.
 function engine(on: any, edgeOk: boolean) {
-  on('session.usage', () => ({ value: { context: { window: 200000 }, rateLimits: [] } }))
   on('ui.scroll', () => ({ value: {} }))
   mock.clock(on)
   on('http.fetch', () => ({
@@ -55,7 +54,6 @@ for (const [edgeOk, via] of [
 //#else
 //: test('the pane shows the Haiku translation and sends nothing over the network', { options: { translateTo: 'Spanish' } }, async ($, on) => {
   //: let fetched = 0
-  //: on('session.usage', () => ({ value: { context: { window: 200000 }, rateLimits: [] } }))
   //: on('ui.scroll', () => ({ value: {} }))
   //: mock.clock(on)
   //: on('http.fetch', () => (fetched++, { value: { status: 500, ok: false, headers: {}, text: '' } }))

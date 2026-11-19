@@ -1,8 +1,8 @@
 {
   "name": "thinking-translate",
   "displayName": "Thinking Translate",
-  "version": "0.9.0",
-  "description": "Shows Claude's thinking live in a side panel next to the chat in Claude Code, with optional translation and a banner with your context and weekly limit",
+  "version": "0.10.0",
+  "description": "Shows Claude's thinking live in a side panel next to the chat in Claude Code, translated into your language",
   "author": {
     "name": "zhangyu-ch",
     "url": "https://github.com/zhangyu-ch"
@@ -10,7 +10,7 @@
   "homepage": "https://github.com/zhangyu-ch/claude-thinking-panel",
   "repository": "https://github.com/zhangyu-ch/claude-thinking-panel",
   "license": "MIT",
-  "keywords": ["thinking", "reasoning", "panel", "translation", "usage"],
+  "keywords": ["thinking", "reasoning", "panel", "translation"],
   "userConfig": {
     "translateTo": {
       "type": "string",

@@ -1,7 +1,7 @@
 """Builds catalogo/, the edition of the plugin submitted to Anthropic's directory, from the full plugin.
 
 The directory's policy does not allow reading chat history or calling endpoints the author does not own, so the
-edition leaves out the usage web page, the limits log and Edge's translator. In the sources, code between
+edition leaves out Edge's translator. In the sources, code between
 //#if full and //#else (or //#endif) is dropped, and lines between //#else and //#endif written as //: <code>
 are uncommented. catalogo/.claude-plugin/plugin.json and catalogo/README.md are written by hand.
 

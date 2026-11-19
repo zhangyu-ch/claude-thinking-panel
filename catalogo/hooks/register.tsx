@@ -2,7 +2,7 @@
 import { atom, read, update } from 'claude-code'
 import type { EngineInterface, Register } from 'claude-code'
 
-import type { Block, Usage } from '../types'
+import type { Block } from '../types'
 
 const PANE = 'thinking-translate'
 const TITLE = '思考过程'
@@ -19,40 +19,7 @@ async function translate($: EngineInterface, translator: string, lang: string, t
   return r.isAnswered ? { es: r.text, via: 'Haiku' as const } : undefined
 }
 
-const WEEK = 7 * 24 * 60 * 60 * 1000
-
-// The banner shows the context in use: the last response's real input tokens against the window
-// auto-compaction fires at (the app's Context panel measures against it too, but with estimated tokens).
-// Then the weekly limit projected to its reset at the current pace.
-// Both go to the banner at the foot of the pane.
-async function measure($: EngineInterface) {
-  const { context, rateLimits } = await $.session.usage({ breakdown: 'summary' })
-  const now: Usage = {}
-  const max = context.breakdown?.rawMaxTokens || context.window
-  if (context.tokens !== undefined && max) now.ctx = Math.round((context.tokens / max) * 100)
-  if (context.tokens !== undefined) now.tokens = context.tokens
-  const week = rateLimits.find(limit => limit.kind === 'seven_day')
-  if (week?.resetsAt) {
-    const elapsed = WEEK - (Date.parse(week.resetsAt) - Date.now())
-    if (elapsed > 60 * 60 * 1000) now.week = Math.round((week.percentUsed * WEEK) / elapsed)
-  }
-  await update($, usage, () => now)
-}
-
-
-// Runs /compact as if the person typed it: the engine queues it until the session is idle,
-// so a press during a turn waits instead of failing.
-async function compact($: EngineInterface) {
-  try {
-    await $.command.run({ command: 'compact' })
-    void measure($).catch(() => undefined)
-  } catch (err) {
-    $.ui.toast(`压缩失败：${err instanceof Error ? err.message : String(err)}`)
-  }
-}
-
 const blocks = atom({ plugin: 'thinking-translate', key: 'blocks' } as const, [])
-const usage = atom({ plugin: 'thinking-translate', key: 'usage' } as const, {})
 
 // Markdown takes tab and newline as its only control characters.
 const clean = (text: string) => text.replace(/\r\n?/g, '\n').replace(/[\u0000-\u0008\u000b-\u001f\u007f]/g, '')
@@ -89,7 +56,6 @@ function action(e: Record<string, unknown> & { tool: string }) {
   return `调用 ${t.replace(/^mcp__[^_]+(?:_[^_]+)*?__/, '')}`
 }
 
-
 export const register: Register = (on, options) => {
   const lang = typeof options.translateTo === 'string' ? options.translateTo : 'off'
   const translator = 'haiku'
@@ -101,11 +67,9 @@ export const register: Register = (on, options) => {
       description: '打开 Claude 思考过程面板',
     })
     void $.ui.open({ id: PANE, title: TITLE })
-    void measure($).catch(() => undefined)
 
     return next(e)
   })
-
 
   on('command.run', { command: 'thinking-translate' }, async $ => {
     await $.ui.open({ id: PANE, title: TITLE })
@@ -166,10 +130,7 @@ export const register: Register = (on, options) => {
       }
     }
 
-    const result = await stream.result
-    if (!e.agentId) void measure($).catch(() => undefined)
-
-    return result
+    return stream.result
   })
 
   // A line per tool call of the main agent, between the thinking blocks, so the panel shows what each thought led to.
@@ -198,7 +159,7 @@ export const register: Register = (on, options) => {
   })
 
   on('ui.render', { component: 'Pane', requestId: PANE }, async ($, e) => {
-    const { Box, Text, Button, Markdown } = $.ui.resolve(e)
+    const { Box, Text, Markdown } = $.ui.resolve(e)
     // Blocks saved by earlier versions may include subagents' thinking: leave it out.
     const all = (await read($, blocks)).filter(b => b.who !== 'subagente')
     // A pane drawn afresh (another chat opened, the app restarted) starts at the top: pin it to the end once drawn.
@@ -230,15 +191,6 @@ export const register: Register = (on, options) => {
     const list = all.slice(start, end)
     anchor = list[0]?.id
 
-    // The banner: the weekly projection and the context in use, in plain text.
-    const { ctx, week, tokens } = await read($, usage)
-    const used = [
-      ctx !== undefined && `上下文 ${ctx}%`,
-      tokens !== undefined && `${Math.round(tokens / 1000)}k`,
-    ].filter(Boolean).join(' · ')
-    // From 200k tokens in use the context goes red: time to compact.
-    const isFull = tokens !== undefined && tokens >= 200000
-
     return (
       <Box flexDirection="column">
         {list.length === 0 && <Text dimColor>暂无思考内容。</Text>}
@@ -259,16 +211,6 @@ export const register: Register = (on, options) => {
             </Box>
           ),
         )}
-        <Box flexDirection="row" alignItems="center" borderStyle="round" paddingX={1} marginTop={1}>
-          <Box flexGrow={1} flexShrink={1}>
-            <Text wrap="truncate-end">
-              {week === undefined && !used && '暂无用量数据'}
-              {week !== undefined && `周用量 ${week}%${used ? ' · ' : ''}`}
-              {used && <Text color={isFull ? 'error' : undefined} bold={isFull}>{used}</Text>}
-            </Text>
-          </Box>
-          <Button key="compact" label="压缩" onPress={() => compact($)} />
-        </Box>
       </Box>
     )
   })

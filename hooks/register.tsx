@@ -1,7 +1,7 @@
 import { atom, read, update } from 'claude-code'
 import type { EngineInterface, Register } from 'claude-code'
 
-import type { Block, Usage } from '../types'
+import type { Block } from '../types'
 
 const PANE = 'thinking-translate'
 const TITLE = '思考过程'
@@ -70,68 +70,7 @@ async function translate($: EngineInterface, translator: string, lang: string, t
   return r.isAnswered ? { es: r.text, via: 'Haiku' as const } : undefined
 }
 
-const WEEK = 7 * 24 * 60 * 60 * 1000
-
-// The banner shows the context in use: the last response's real input tokens against the window
-// auto-compaction fires at (the app's Context panel measures against it too, but with estimated tokens).
-// Then the weekly limit projected to its reset at the current pace.
-// Both go to the banner at the foot of the pane.
-async function measure($: EngineInterface) {
-  const { context, rateLimits } = await $.session.usage({ breakdown: 'summary' })
-  const now: Usage = {}
-  const max = context.breakdown?.rawMaxTokens || context.window
-  if (context.tokens !== undefined && max) now.ctx = Math.round((context.tokens / max) * 100)
-  if (context.tokens !== undefined) now.tokens = context.tokens
-  const week = rateLimits.find(limit => limit.kind === 'seven_day')
-  if (week?.resetsAt) {
-    const elapsed = WEEK - (Date.parse(week.resetsAt) - Date.now())
-    if (elapsed > 60 * 60 * 1000) now.week = Math.round((week.percentUsed * WEEK) / elapsed)
-  }
-  await update($, usage, () => now)
-  //#if full
-  await record($, rateLimits).catch(() => undefined)
-  //#endif
-}
-
-//#if full
-// The limits' percentages exist only here, reading by reading; nothing else keeps them. Each change goes to
-// ~/.claude/uso/limites.json, so the usage web can work out what a full limit is worth per model.
-let lastSeen = ''
-async function usoDir($: EngineInterface) {
-  const home = (await $.env.get('USERPROFILE')) ?? (await $.env.get('HOME'))
-  return home ? `${home}/.claude/uso` : undefined
-}
-async function record($: EngineInterface, limits: { kind: string; percentUsed: number; resetsAt?: string }[]) {
-  const seen = limits.map(l => `${l.kind}|${l.percentUsed}|${l.resetsAt ?? ''}`).join(',')
-  if (!limits.length || seen === lastSeen) return
-  lastSeen = seen
-  const dir = await usoDir($)
-  if (!dir) return
-  const path = `${dir}/limites.json`
-  // Read again before each write: other sessions add to the same file.
-  const log: [number, string, number, string][] = await $.fs.read(path).then(t => JSON.parse(t as string), () => [])
-  const t = Date.now()
-  for (const l of limits) {
-    const prev = [...log].reverse().find(x => x[1] === l.kind)
-    if (!prev || prev[2] !== l.percentUsed || prev[3] !== (l.resetsAt ?? '')) log.push([t, l.kind, l.percentUsed, l.resetsAt ?? ''])
-  }
-  await $.fs.write(path, JSON.stringify(log.slice(-50000)))
-}
-//#endif
-
-// Runs /compact as if the person typed it: the engine queues it until the session is idle,
-// so a press during a turn waits instead of failing.
-async function compact($: EngineInterface) {
-  try {
-    await $.command.run({ command: 'compact' })
-    void measure($).catch(() => undefined)
-  } catch (err) {
-    $.ui.toast(`压缩失败：${err instanceof Error ? err.message : String(err)}`)
-  }
-}
-
 const blocks = atom({ plugin: 'thinking-translate', key: 'blocks' } as const, [])
-const usage = atom({ plugin: 'thinking-translate', key: 'usage' } as const, {})
 
 // Markdown takes tab and newline as its only control characters.
 const clean = (text: string) => text.replace(/\r\n?/g, '\n').replace(/[\u0000-\u0008\u000b-\u001f\u007f]/g, '')
@@ -168,30 +107,6 @@ function action(e: Record<string, unknown> & { tool: string }) {
   return `调用 ${t.replace(/^mcp__[^_]+(?:_[^_]+)*?__/, '')}`
 }
 
-//#if full
-async function web($: EngineInterface, quiet = false) {
-  try {
-    const { rateLimits } = await $.session.usage({ breakdown: 'summary' })
-    const limits = JSON.stringify(rateLimits.map(l => ({ kind: l.kind, pct: l.percentUsed, resetsAt: l.resetsAt })))
-    const path = `${$.plugin.root}/scripts/uso_web.py`
-    let r
-    for (const exe of ['python', 'py']) {
-      try {
-        r = await $.process.run([exe, '-I', path, '--limits', limits, ...(quiet ? ['--no-open'] : [])], { timeoutMs: 600000 })
-        break
-      } catch {
-        // Try the next Python launcher.
-      }
-    }
-    if (!r) throw new Error('找不到 Python')
-    if (r.exitCode !== 0) throw new Error(r.stderr.trim().split('\n').pop() || `退出码 ${r.exitCode}`)
-    if (!quiet) $.ui.toast('用量网页已在浏览器中打开。')
-  } catch (err) {
-    if (!quiet) $.ui.toast(`无法打开用量网页：${err instanceof Error ? err.message : String(err)}`)
-  }
-}
-//#endif
-
 export const register: Register = (on, options) => {
   const lang = typeof options.translateTo === 'string' ? options.translateTo : 'off'
   //#if full
@@ -206,38 +121,10 @@ export const register: Register = (on, options) => {
       name: 'thinking-translate',
       description: '打开 Claude 思考过程面板',
     })
-    //#if full
-    await $.command.register({
-      name: 'usage',
-      description: '在浏览器中打开用量网页：限额、花费和省钱建议',
-    })
-    //#endif
     void $.ui.open({ id: PANE, title: TITLE })
-    void measure($).catch(() => undefined)
 
     return next(e)
   })
-
-  //#if full
-  // /usage: scripts/uso_web.py reads the transcripts, writes a web page and opens it in the browser.
-  // The limits only exist here, in the engine, so they go to the script as an argument.
-  on('command.run', { command: 'usage' }, async $ => {
-    void web($)
-
-    return { text: '正在生成用量网页，稍后将在浏览器中打开。' }
-  })
-
-  // The web is rebuilt with the live limits after a turn, at most every 10 minutes, and the open page reloads itself.
-  let lastWeb = 0
-  on('turn.complete', async ($, e, next) => {
-    const result = await next(e)
-    if (Date.now() - lastWeb > 10 * 60 * 1000) {
-      lastWeb = Date.now()
-      void web($, true)
-    }
-    return result
-  })
-  //#endif
 
   on('command.run', { command: 'thinking-translate' }, async $ => {
     await $.ui.open({ id: PANE, title: TITLE })
@@ -298,10 +185,7 @@ export const register: Register = (on, options) => {
       }
     }
 
-    const result = await stream.result
-    if (!e.agentId) void measure($).catch(() => undefined)
-
-    return result
+    return stream.result
   })
 
   // A line per tool call of the main agent, between the thinking blocks, so the panel shows what each thought led to.
@@ -330,7 +214,7 @@ export const register: Register = (on, options) => {
   })
 
   on('ui.render', { component: 'Pane', requestId: PANE }, async ($, e) => {
-    const { Box, Text, Button, Markdown } = $.ui.resolve(e)
+    const { Box, Text, Markdown } = $.ui.resolve(e)
     // Blocks saved by earlier versions may include subagents' thinking: leave it out.
     const all = (await read($, blocks)).filter(b => b.who !== 'subagente')
     // A pane drawn afresh (another chat opened, the app restarted) starts at the top: pin it to the end once drawn.
@@ -362,15 +246,6 @@ export const register: Register = (on, options) => {
     const list = all.slice(start, end)
     anchor = list[0]?.id
 
-    // The banner: the weekly projection and the context in use, in plain text.
-    const { ctx, week, tokens } = await read($, usage)
-    const used = [
-      ctx !== undefined && `上下文 ${ctx}%`,
-      tokens !== undefined && `${Math.round(tokens / 1000)}k`,
-    ].filter(Boolean).join(' · ')
-    // From 200k tokens in use the context goes red: time to compact.
-    const isFull = tokens !== undefined && tokens >= 200000
-
     return (
       <Box flexDirection="column">
         {list.length === 0 && <Text dimColor>暂无思考内容。</Text>}
@@ -391,16 +266,6 @@ export const register: Register = (on, options) => {
             </Box>
           ),
         )}
-        <Box flexDirection="row" alignItems="center" borderStyle="round" paddingX={1} marginTop={1}>
-          <Box flexGrow={1} flexShrink={1}>
-            <Text wrap="truncate-end">
-              {week === undefined && !used && '暂无用量数据'}
-              {week !== undefined && `周用量 ${week}%${used ? ' · ' : ''}`}
-              {used && <Text color={isFull ? 'error' : undefined} bold={isFull}>{used}</Text>}
-            </Text>
-          </Box>
-          <Button key="compact" label="压缩" onPress={() => compact($)} />
-        </Box>
       </Box>
     )
   })
