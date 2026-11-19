@@ -1,0 +1,39 @@
+{
+  "name": "razonamiento",
+  "version": "0.8.0",
+  "description": "Shows Claude's thinking live in a side panel next to the chat, with optional translation, and a switch to a view of your usage and spending",
+  "author": {
+    "name": "zhangyu-ch"
+  },
+  "license": "MIT",
+  "userConfig": {
+    "translateTo": {
+      "type": "string",
+      "title": "Translate thinking to",
+      "description": "Language the side panel translates each thinking block into. off shows it as written.",
+      "default": "Chinese",
+      "options": [
+        "off",
+        "Spanish",
+        "English",
+        "French",
+        "German",
+        "Portuguese",
+        "Italian",
+        "Chinese",
+        "Japanese"
+      ]
+    },
+    "translator": {
+      "type": "string",
+      "title": "Translator",
+      "description": "edge: Microsoft Edge's free translate endpoint, no key and no usage, unofficial; falls back to Claude Haiku at low effort if it fails. haiku: always Claude Haiku at low effort, uses a little of your usage.",
+      "default": "edge",
+      "options": [
+        "edge",
+        "haiku"
+      ]
+    }
+  },
+  "types": "./types/index.d.ts"
+}

@@ -1,0 +1,15 @@
+{
+  "name": "claude-thinking-panel",
+  "owner": {
+    "name": "zhangyu-ch"
+  },
+  "metadata": {
+    "description": "Razonamiento: Claude's thinking live in a side panel in Claude Code, with a usage page"
+  },
+  "plugins": [
+    {
+      "name": "razonamiento",
+      "source": "./"
+    }
+  ]
+}

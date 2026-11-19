@@ -1,0 +1,24 @@
+{
+  "name": "razonamiento",
+  "displayName": "Razonamiento",
+  "version": "0.8.0",
+  "description": "Shows Claude's thinking live in a side panel next to the chat in Claude Code, with optional translation and a banner with your context and weekly limit",
+  "author": {
+    "name": "zhangyu-ch",
+    "url": "https://github.com/zhangyu-ch"
+  },
+  "homepage": "https://github.com/zhangyu-ch/claude-thinking-panel",
+  "repository": "https://github.com/zhangyu-ch/claude-thinking-panel",
+  "license": "MIT",
+  "keywords": ["thinking", "reasoning", "panel", "translation", "usage"],
+  "userConfig": {
+    "translateTo": {
+      "type": "string",
+      "title": "Translate thinking to",
+      "description": "Language the side panel translates each finished thinking block into, with Claude Haiku at low effort through your own session. off shows it as written.",
+      "default": "Chinese",
+      "options": ["off", "Spanish", "English", "French", "German", "Portuguese", "Italian", "Chinese", "Japanese"]
+    }
+  },
+  "types": "./types/index.d.ts"
+}
