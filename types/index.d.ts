@@ -1,7 +1,8 @@
-export type Block = { id: string; who: string; text: string; isDone: boolean; es?: string; via?: 'Edge' | 'Haiku'; isPrompt?: boolean; isAction?: boolean }
+// A translation of the thinking right before a row: `key` is the tool call's id, or `text:` and a reply's opening words.
+export type Note = { key: string; zh?: string; isDone?: boolean }
 
 declare module 'claude-code' {
   interface PluginState {
-    'thinking-translate': { blocks: Block[] }
+    'thinking-translate': { notes: Note[] }
   }
 }

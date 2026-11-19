@@ -1,7 +1,7 @@
 {
   "name": "thinking-translate",
-  "version": "0.10.0",
-  "description": "Shows Claude's thinking live in a side panel next to the chat, translated into your language",
+  "version": "1.0.0",
+  "description": "Translates Claude's thinking and shows the translation right under each thinking block in the chat, with Claude Haiku or any Anthropic Messages API endpoint",
   "author": {
     "name": "zhangyu-ch"
   },
@@ -10,7 +10,7 @@
     "translateTo": {
       "type": "string",
       "title": "Translate thinking to",
-      "description": "Language the side panel translates each thinking block into. off shows it as written.",
+      "description": "Language each thinking block is translated into, shown as a quote under the block. off turns translation off.",
       "default": "Chinese",
       "options": [
         "off",
@@ -27,12 +27,31 @@
     "translator": {
       "type": "string",
       "title": "Translator",
-      "description": "edge: Microsoft Edge's free translate endpoint, no key and no usage, unofficial; falls back to Claude Haiku at low effort if it fails. haiku: always Claude Haiku at low effort, uses a little of your usage.",
-      "default": "edge",
+      "description": "haiku: Claude Haiku at low effort through your own Claude session. api: any endpoint speaking the Anthropic Messages protocol (Anthropic or a compatible provider), set below.",
+      "default": "haiku",
       "options": [
-        "edge",
-        "haiku"
+        "haiku",
+        "api"
       ]
+    },
+    "apiBaseUrl": {
+      "type": "string",
+      "title": "API base URL",
+      "description": "For translator api: base URL, /v1/messages is added to it.",
+      "default": "https://api.anthropic.com"
+    },
+    "apiKey": {
+      "type": "string",
+      "title": "API key",
+      "description": "For translator api: sent as x-api-key.",
+      "default": "",
+      "sensitive": true
+    },
+    "apiModel": {
+      "type": "string",
+      "title": "API model",
+      "description": "For translator api: the model name the endpoint takes.",
+      "default": "claude-haiku-5-5"
     }
   },
   "types": "./types/index.d.ts"

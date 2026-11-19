@@ -4,7 +4,7 @@
     "name": "zhangyu-ch"
   },
   "metadata": {
-    "description": "thinking-translate: Claude's thinking live in a side panel in Claude Code, translated into your language"
+    "description": "thinking-translate: Claude's thinking translated right under each thinking block in Claude Code"
   },
   "plugins": [
     {

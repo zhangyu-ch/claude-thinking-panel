@@ -1,68 +1,60 @@
 # Thinking Translate
 
-A Claude Code mod that shows Claude's thinking live in a side panel next to the chat, instead of mixed into the conversation.
+Claude Code 插件：把 Claude 的思考（thinking）翻译成你选的语言，译文以引用块显示在主对话里，紧挨着那段思考，方便快速浏览 agent 的工作思路、检查有没有疏忽。
 
-- Each of your prompts appears as a bubble on the right, with the thinking it triggered underneath, just like the chat.
-- Thinking streams in as Claude writes it ("思考中..." while a block is still being written) and the panel follows the newest text while you are at the bottom. Scroll up to read and it stays put; scroll back to the end and it follows again.
-- Optional translation: each finished thinking block can be translated into the language you pick, for free by Microsoft Edge's translate endpoint, with Claude Haiku (low effort) as fallback. Chinese by default.
-- Between the thinking blocks, a dim line says what Claude did next ("→ 读取 register.tsx", "→ 执行：...", "→ 网页搜索：..."). Only the main agent's calls; the app's own bookkeeping tools are left out.
-- Only the main agent's thinking is shown; subagents' thinking is left out.
+- 每段思考结束后在后台翻译，不阻塞 Claude 继续工作；译文显示在思考之后的那一行（工具调用或回复文字）上方，翻译完成前显示「翻译中...」。
+- 模型输出原样透传，译文只是界面上的显示，不会进入对话记录，模型看不到，也不占上下文。
+- 只翻译主 agent 的思考，子代理的不翻译；翻译失败时什么都不显示。
 
-The panel is in Chinese (the panel is titled "思考过程").
+## 安装
 
-## Install
-
-At the prompt of a Claude Code terminal session:
+在 Claude Code 里：
 
 ```
 /plugin install thinking-translate --marketplace zhangyu-ch/claude-thinking-panel
 ```
 
-From a shell:
+或在终端里：
 
 ```bash
 claude plugin install thinking-translate --marketplace zhangyu-ch/claude-thinking-panel
 ```
 
-In the Claude desktop app, where `/plugin` does not run: click + next to the prompt box, then Plugins, Add marketplace with `zhangyu-ch/claude-thinking-panel`, then Add plugin.
+## 让思考常驻显示
 
-Install it at the user scope to get the panel in every session. Sessions already open pick it up after a restart.
+插件只负责翻译，思考是否展开由 Claude Code 控制：终端里在 `/config` 打开 **Verbose output**（或按 Ctrl+O 临时展开）；桌面版把对话视图设为 thinking。
 
-## Use
+## 配置
 
-The panel opens by itself when a session starts. If you close it, run `/thinking-translate` to open it again.
-
-The panel only receives the thinking that Claude Code is set to show. In the desktop app, set the conversation's transcript view to "thinking" (title bar menu, or Ctrl+O). With the "normal" view the panel stays empty.
-
-## Translation
-
-Two options in the plugin's config:
-
-- `translateTo`: off, Spanish, English, French, German, Portuguese, Italian, Chinese or Japanese. Default Chinese.
-- `translator`:
-  - `edge` (default): Microsoft Edge's free translate endpoint (`edge.microsoft.com/translate/translatetext`). No key, no account, no usage. It is unofficial: Microsoft can change or stop it at any time, and your thinking text is sent to Microsoft. Long blocks are sent in chunks of up to 10,000 characters. If Edge fails, that block is translated by Claude Haiku instead.
-  - `haiku`: always Claude Haiku at low effort, through your own Claude session. Good quality, uses a little of your subscription usage per block.
-
-While a block is being written it shows as written; once the block ends it is replaced by the translation, usually within a second or two.
-
-Or set them in `~/.claude/settings.json`:
+在 `/config` 的插件选项里设置，或写进 `~/.claude/settings.json`：
 
 ```json
 "pluginConfigs": {
   "thinking-translate@claude-thinking-panel": {
-    "options": { "translateTo": "Chinese", "translator": "edge" }
+    "options": {
+      "translateTo": "Chinese",
+      "translator": "api",
+      "apiBaseUrl": "https://api.anthropic.com",
+      "apiModel": "claude-haiku-5-5"
+    }
   }
 }
 ```
 
-## How it works
+| 选项 | 说明 | 默认 |
+| --- | --- | --- |
+| `translateTo` | 目标语言：off、Chinese、English、Japanese 等；off 关闭翻译 | Chinese |
+| `translator` | `haiku`：通过你自己的 Claude 会话调用 Haiku（低 effort），会用掉少量订阅额度。`api`：调用任意支持 Anthropic Messages 协议的接口 | haiku |
+| `apiBaseUrl` | `api` 方式的接口地址，会自动拼上 `/v1/messages`。Anthropic 或兼容 Messages 协议的服务商都可以 | https://api.anthropic.com |
+| `apiKey` | `api` 方式的密钥，以 `x-api-key` 发送；属于敏感字段，存在系统安全存储里，请在 `/config` 里填写，不要写进 settings.json | 空 |
+| `apiModel` | `api` 方式使用的模型名 | claude-haiku-5-5 |
 
-The mod hooks the model's response stream (`turn.step`), copies the thinking chunks into session state and draws them in a pane. It writes no files and reads nothing else. The only thing sent anywhere is the optional translation request (to Microsoft with `edge`, or to your own Claude session with Haiku).
+## 已知限制
 
-## Directory edition
+- 回复文字按开头 40 个字符与译文对应；终端若显示的是回复摘要而非原文，那条回复上方不显示译文（工具调用行按 id 对应，不受影响）。
+- `api` 方式没有单独的超时，接口卡住时会等到宿主的请求超时。
+- 思考内容会发送给你配置的翻译服务（Haiku 走你自己的 Claude 会话；`api` 发往你填的接口）。
 
-`catalogo/` is the edition submitted to Anthropic's plugin directory. The directory does not allow reading chat history or calling endpoints the author does not own, so it leaves out Edge's translator, and translates with Haiku only. `tools/catalogo.py` builds it from this plugin: code between `//#if full` and `//#else` or `//#endif` is dropped, and lines between `//#else` and `//#endif` written as `//: <code>` are uncommented. Run `python -I tools/catalogo.py` after a change; `--check` says whether `catalogo/` is current, and `--with-tests <folder>` writes the edition with its tests for `claude plugin test`. Its `plugin.json`, `icon.png` and `README.md` are written by hand.
+## 许可
 
-## License
-
-MIT
+MIT。基于 [gomez5757/claude-thinking-panel](https://github.com/gomez5757/claude-thinking-panel) 修改。
